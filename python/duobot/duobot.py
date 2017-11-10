@@ -25,22 +25,37 @@ for state in game.turns():
 
     for entity in state.get_entities(team=state.my_team): 
         # This line gets all the bots on your team
+        if entity.type != "thrower":
+            continue
 
         # code if this entity is an explorer
-        if increase_explorer and entity.id not in explorer_id_list and entity.type == "thrower":
+        if increase_explorer and entity.id not in explorer_id_list:
             increase_explorer = False
             explorer_id_list.append(entity.id)
             print("increased number of explorers to: ",len(explorer_id_list))
 
+
+        #DESIGNATE ROLES
         if entity.id in explorer_id_list:
-            movement.expansion(state,entity)
-            continue
-        
-        if entity.is_thrower: 
+            role = "explore"
+        else: role = "idle" #default
+
+        # CARRY OUT ROLES
+        if role == "explore":
+            current_action = movement.expansion(state,entity)
+            if current_action = "idle":
+                role = "idle"
+            else: continue
+
+        if role == "idle":
             prep_stance(entity, 'attack', state)
             stance(entity, 'attack', state, enemies)
 
             movement.away_from_glass(entity, state)
+
+        if role == "defend":
+            pass        
+
 
 
 end = time.clock()
