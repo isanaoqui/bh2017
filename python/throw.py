@@ -63,18 +63,20 @@ def attack_with_enemy(unit, tiles, enemies):
                 # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
                 if unit.can_throw(direction):
                     unit.queue_throw(direction)
+                    print('enemy throw')
                     return 1
 
-    # ## Dirt spaces
-    # else: 
-    #     dirt_tiles = Throw.get_dirt_tiles(unit.location, tiles) # List of dirt tile locations
-    #     if len(dirt_tiles) > 0:
-    #         for tile in dirt_tiles: 
-    #             direction = unit.location.direction_to(tile)
-    #             # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
-    #             if unit.can_throw(direction):
-    #                 unit.queue_throw(direction)
-    #                 return True
+    ## Dirt spaces
+    dirt_tiles = get_dirt_tiles(unit.location, tiles) # List of dirt tile locations
+    if len(dirt_tiles) > 0:
+        for tile in dirt_tiles: 
+            if unit.location != tile: 
+                direction = unit.location.direction_to(tile)
+                # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
+                if unit.can_throw(direction):
+                    unit.queue_throw(direction)
+                    print('DIRTTT')
+                    return 1
 
     return 0
 
@@ -89,11 +91,44 @@ def attack_with_ally(unit, enemies):
     if len(enemies) > 0:
         enemies.sort(key=lambda x: x.location)
         for enemy in enemies: 
-            direction = unit.location.direction_to(enemy.location)
-            # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
-            if unit.can_throw(direction):
-                unit.queue_throw(direction)
-                return 1
+            if enemy != unit.holding:
+                direction = unit.location.direction_to(enemy.location)
+                # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
+                if unit.can_throw(direction):
+                    unit.queue_throw(direction)
+                    print('friend throw')
+                    return 1
+    return 0
+
+def defend(unit, defendLoc, my_team, enemies):
+    """
+    1. Scan for far away dirt patches
+    2. Scan for nearer dirt patches
+    3. Throw at enemies
+    """
+    ## Dirt spaces
+    dirt_tiles = get_dirt_tiles(unit.location, tiles) # List of dirt tile locations
+    if len(dirt_tiles) > 0:
+        for tile in dirt_tiles: 
+            if unit.location != tile: 
+                direction = unit.location.direction_to(tile)
+                # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
+                if unit.can_throw(direction):
+                    unit.queue_throw(direction)
+                    print('DIRTTT')
+                    return 1
+
+    ## Enemies
+    if len(enemies) > 0:
+        enemies.sort(key=lambda x: unit.location.distance_to(x.location))
+        for enemy in enemies: 
+            if enemy != unit.holding:
+                direction = unit.location.direction_to(enemy.location)
+                # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
+                if unit.can_throw(direction):
+                    unit.queue_throw(direction)
+                    print('enemy throw')
+                    return 1
     return 0
 
 def coast_clear(unit, targetLoc, direction):
@@ -108,15 +143,16 @@ def get_dirt_tiles(startLoc, tiles):
     Returns a list of sorted Location objects in terms of startLoc.
     Far away first, closer last (so reverse order).
     """
-    raise NotImplementedError
+    dirt_tiles = []
+    for j in range(len(tiles)):
+        row = tiles[j]
+        for i in range(len(tiles[0])):
+            elem = row[i]
+            if elem == 'D':
+                dirt_tiles.append(battlecode.Location(i,j))
 
-def defend(unit, defendLoc, my_team, enemy_team):
-    """
-    1. Scan for far away dirt patches
-    2. Scan for nearer dirt patches
-    3. Throw at enemies
-    """
-    raise NotImplementedError
+    dirt_tiles = sorted(dirt_tiles, key=lambda x: startLoc.distance_to(x), reverse=True)
+    return dirt_tiles
 
 # @staticmethod
 # def throw(thrower, targetLoc):

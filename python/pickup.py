@@ -49,9 +49,11 @@ def prep_attack(unit, my_team):
 
     if enemy != None and unit.can_pickup(enemy): 
         unit.queue_pickup(enemy)
+        print('enemy pickup')
         return 1
     elif friend != None and unit.can_pickup(friend):
         unit.queue_pickup(friend)
+        print('friend pickup')
         return 1
     return -1
 
