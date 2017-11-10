@@ -43,14 +43,16 @@ for state in game.turns():
         # CARRY OUT ROLES
         if role == "explore":
             current_action = movement.expansion(state,entity)
-            if current_action = "idle":
+            if current_action == "idle":
                 role = "idle"
             else: continue
 
         if role == "idle":# If thrower, tries to attack
             carrying = prep_stance(entity, 'attack', state)
             if carrying >= 0: 
-                stance(entity, 'attack', state, enemies)
+                attacked = stance(entity, 'attack', state, enemies)
+                if attacked == 0:
+                    stance(entity, 'hedge', state)
 
             movement.away_from_glass(entity, state)
 

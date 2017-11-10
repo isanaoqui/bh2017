@@ -55,12 +55,13 @@ def prep_attack(unit, my_team):
                 print('enemy pickup')
                 return 1
 
-    elif len(friends) > 0:
+    if len(friends) > 0:
         for friend in friends: 
             if unit.can_pickup(friend):
                 unit.queue_pickup(friend)
                 print('friend pickup')
                 return 1
+
     return -1
 
 def prep_defend(unit, my_team):
