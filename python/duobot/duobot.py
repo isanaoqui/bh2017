@@ -25,6 +25,7 @@ for state in game.turns():
 
     for entity in state.get_entities(team=state.my_team): 
         # This line gets all the bots on your team
+        my_location = entity.location
         if entity.type != "thrower":
             continue
 
@@ -43,11 +44,16 @@ for state in game.turns():
         # CARRY OUT ROLES
         if role == "explore":
             current_action = movement.expansion(state,entity)
-            if current_action = "idle":
+            if current_action == "idle":
                 role = "idle"
             else: continue
 
         if role == "idle":# If thrower, tries to attack
+            if state.map.sector_at(my_location).team.name != state.my_team.name:
+                print("hello?")
+                for direction in battlecode.Direction.directions():
+                    if entity.can_build(direction):
+                        entity.queue_build(direction)
             carrying = prep_stance(entity, 'attack', state)
             if carrying >= 0: 
                 stance(entity, 'attack', state, enemies)
