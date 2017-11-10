@@ -18,7 +18,7 @@ def prep_stance(unit, setting, state):
     """
     my_team = state.my_team
     
-    if not unit.is_holding: 
+    if not unit.is_holding and not unit.is_held: 
         if setting == 'expand': 
             return prep_expand(unit)
         elif setting == 'attack':
@@ -52,15 +52,16 @@ def prep_attack(unit, my_team):
         for enemy in enemies:
             if unit.can_pickup(enemy): 
                 unit.queue_pickup(enemy)
-                print('enemy pickup')
+                # print('enemy pickup')
                 return 1
 
-    elif len(friends) > 0:
+    if len(friends) > 0:
         for friend in friends: 
             if unit.can_pickup(friend):
                 unit.queue_pickup(friend)
-                print('friend pickup')
+                # print('friend pickup')
                 return 1
+
     return -1
 
 def prep_defend(unit, my_team):

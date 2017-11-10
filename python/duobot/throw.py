@@ -1,6 +1,6 @@
 import battlecode
 
-def stance(unit, setting, state, enemies, defendLoc=None):
+def stance(unit, setting, state, enemies=None, defendLoc=None):
     """
     This function evaluates what setting is on (expand, attack, defend). 
     Expand: 
@@ -26,6 +26,8 @@ def stance(unit, setting, state, enemies, defendLoc=None):
             return attack(unit, tiles, my_team, enemies)
         elif setting == 'defend' and defendLoc != None:
             return defend(unit, defendLoc, my_team, enemies)
+        elif setting == 'hedge': 
+            return hedge(unit, state)
     return -1
 
 def expand(unit, my_team):
@@ -67,12 +69,12 @@ def attack_with_enemy(unit, tiles, enemies):
     if len(enemies) > 0:
         enemies.sort(key=lambda x: unit.location.distance_to(x.location))
         for enemy in enemies: 
-            if enemy != unit.holding:
+            if enemy.location != unit.location:
                 direction = unit.location.direction_to(enemy.location)
                 # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
                 if unit.can_throw(direction):
                     unit.queue_throw(direction)
-                    print('enemy throw')
+                    # print('enemy throw')
                     return 1
 
     ## Dirt spaces
@@ -84,7 +86,7 @@ def attack_with_enemy(unit, tiles, enemies):
                 # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
                 if unit.can_throw(direction):
                     unit.queue_throw(direction)
-                    print('DIRTTT')
+                    # print('DIRTTT')
                     return 1
 
     return 0
@@ -100,12 +102,12 @@ def attack_with_ally(unit, enemies):
     if len(enemies) > 0:
         enemies.sort(key=lambda x: x.location)
         for enemy in enemies: 
-            if enemy != unit.holding:
+            if enemy.location != unit.location:
                 direction = unit.location.direction_to(enemy.location)
                 # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
                 if unit.can_throw(direction):
                     unit.queue_throw(direction)
-                    print('friend throw')
+                    # print('friend throw')
                     return 1
     return 0
 
@@ -124,7 +126,7 @@ def defend(unit, defendLoc, my_team, enemies):
                 # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
                 if unit.can_throw(direction):
                     unit.queue_throw(direction)
-                    print('DIRTTT')
+                    # print('DIRTTT')
                     return 1
 
     ## Enemies
@@ -136,8 +138,25 @@ def defend(unit, defendLoc, my_team, enemies):
                 # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
                 if unit.can_throw(direction):
                     unit.queue_throw(direction)
-                    print('enemy throw')
+                    # print('enemy throw')
                     return 1
+    return 0
+
+def hedge(unit, state):
+    """
+    Tries to get rid of hedges. IMPROVE!
+    
+    Returns: 
+    1 Threw someone
+    0 Didn't throw someone
+    """
+    for entity in unit.entities_within_adjacent_distance(1):
+        if entity.team.id == 0: 
+            direction = unit.location.direction_to(entity.location)
+            if unit.can_throw(direction): 
+                unit.queue_throw(direction)
+                # print('HEDGEE')
+                return 1
     return 0
 
 # def coast_clear(unit, targetLoc, direction):
