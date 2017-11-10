@@ -1,7 +1,6 @@
 import battlecode
 
-
-def prep_stance(unit, setting, my_team):
+def prep_stance(unit, setting, state):
     """
     This function evaluates what setting is on (expand, attack, defend). 
     Expand: 
@@ -17,6 +16,8 @@ def prep_stance(unit, setting, my_team):
         1 if picked up someone => Can now throw
         -1 if done nothing => Can now move / build / etc. 
     """
+    my_team = state.my_team
+    
     if not unit.is_holding: 
         if setting == 'expand': 
             return prep_expand(unit)

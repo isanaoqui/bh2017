@@ -1,6 +1,6 @@
 import battlecode
 
-def stance(unit, setting, tiles, my_team, enemies, defendLoc=None):
+def stance(unit, setting, state, enemies, defendLoc=None):
     """
     This function evaluates what setting is on (expand, attack, defend). 
     Expand: 
@@ -16,6 +16,9 @@ def stance(unit, setting, tiles, my_team, enemies, defendLoc=None):
         -1 if didn't do anything / not holding someone
         1 if threw someone 
     """
+    tiles = state.map.tiles
+    my_team = state.my_team
+
     if unit.is_holding: 
         if setting == 'expand': 
             return expand(unit, my_team)
@@ -32,7 +35,13 @@ def attack(unit, tiles, my_team, enemies):
     """
     Priority:
         pick up enemy and throw them onto enemy (for 10 turns)
+            glass statues
+            throwers
+            hedges
         pick up enemy and throw them away (from statue?)
+            hedges
+            dirt 
+            grass
         pick up ally and throw them onto enemy, land on grass
         pick up ally and throw them onto enemy, land on dirt
 
@@ -131,12 +140,12 @@ def defend(unit, defendLoc, my_team, enemies):
                     return 1
     return 0
 
-def coast_clear(unit, targetLoc, direction):
-    """
-    This function checks if the unit I want to hit is the first one
-    in the given direction. 
-    """
-    raise NotImplementedError
+# def coast_clear(unit, targetLoc, direction):
+#     """
+#     This function checks if the unit I want to hit is the first one
+#     in the given direction. 
+#     """
+#     raise NotImplementedError
 
 def get_dirt_tiles(startLoc, tiles):
     """

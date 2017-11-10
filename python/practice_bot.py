@@ -4,7 +4,7 @@ import random
 
 from pickup import *
 from throw import *
-
+from onestepmov import *
 
 #Start a game
 game = battlecode.Game('testplayer')
@@ -17,12 +17,10 @@ for state in game.turns():
 
     for entity in state.get_entities(team=state.my_team): 
         if entity.is_thrower: 
-            prep_stance(entity, 'attack', state.my_team)
-            stance(entity, 'attack', state.map.tiles, state.my_team, enemies)
+            prep_stance(entity, 'attack', state)
+            stance(entity, 'attack', state, enemies)
 
-        for direction in battlecode.Direction.directions():
-            if entity.can_move(direction):
-                entity.queue_move(direction)
+            away_from_glass(entity, state)
 
 end = time.clock()
 print('clock time: '+str(end - start))
