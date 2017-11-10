@@ -72,6 +72,42 @@ def away_from_glass(unit, state):
             
     return 0
 
+def space_out(state, entity, radius):
+	my_location = entity.location
+	direction_dict = {}
+
+	cumulative_x = 0
+	cumulative_y = 0
+	nearby_entities = entity.entities_within_euclidean_distance(radius)
+	for nearby_entity in nearby_entities:
+		if nearby_entity.team == state.other_team: continue
+		vector = compute_vector(entity,nearby_entity)
+		cumulative_x += vector[0]
+		cumulative_y += vector[1]
+
+	if cumulative_x == 0 and cumulative_y == 0: return
+	final_direction = battlecode.Direction.from_delta(cumulative_x,cumulative_y)
+
+	if entity.id == 3 and state.turn == 160:
+		print(cumulative_x, " ", cumulative_y)
+
+	if entity.can_move(final_direction):
+		entity.queue_move(final_direction)
+	else:
+		for direction in battlecode.Direction.directions():
+			if entity.can_move(direction):
+				entity.queue_move(direction)
+
+
+
+def compute_vector(entity, other):
+	my_location = entity.location
+	other_location = other.location
+	dx = my_location.x - other_location.x
+	dy = my_location.y - other_location.y
+	return (dx,dy)
+
+
 
 
 
