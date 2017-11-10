@@ -47,12 +47,16 @@ for state in game.turns():
             else: continue
 
         if role == "idle":# If thrower, tries to attack
+            build_state = True
             if state.map.sector_at(my_location).team.name != state.my_team.name:
-                # print("hello?")
-                for direction in battlecode.Direction.directions():
-                    if entity.can_build(direction):
-                        entity.queue_build(direction)
-                        break
+                for ent in entity.entities_within_euclidean_distance(4):
+                    if ent.type == "statue":
+                        build_state = False
+                if build_state: #build
+                    for direction in battlecode.Direction.directions():
+                        if entity.can_build(direction):
+                            entity.queue_build(direction)
+                            break
 
             carrying = prep_stance(entity, 'attack', state)
             if carrying >= 0: 
