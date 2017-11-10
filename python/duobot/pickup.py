@@ -42,7 +42,7 @@ def prep_attack(unit, my_team):
     friends = []
     enemies = []
 
-    for entity in unit.entities_within_adjacent_distance(1):
+    for entity in unit.entities_within_euclidean_distance(1):
         if entity.team == my_team:
             friends.append(entity)
         else: 
