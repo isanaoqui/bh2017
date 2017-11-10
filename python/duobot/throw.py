@@ -51,10 +51,11 @@ def attack(unit, tiles, my_team, enemies):
         True if threw someone
         False if still holding someone
     """
-    if unit.holding.team != my_team: 
-        return attack_with_enemy(unit, tiles, enemies)
-    else:
-        return attack_with_ally(unit, enemies)
+    # if unit.holding.team != my_team: 
+    #     return attack_with_enemy(unit, tiles, enemies)
+    # else:
+    #     return attack_with_ally(unit, enemies)
+    return attack_with_enemy(unit, tiles, enemies)
 
 def attack_with_enemy(unit, tiles, enemies):
     """
@@ -67,6 +68,16 @@ def attack_with_enemy(unit, tiles, enemies):
     """
     ## Enemies
     if len(enemies) > 0:
+        glass_statues = filter(lambda x: x.is_statue == True, enemies)
+        glass_statues = sorted(filter(lambda x: unit.location.distance_to(x.location) < 8, glass_statues))
+
+        if len(glass_statues) > 0:
+            for glass_statue in glass_statues: 
+                direction = unit.location.direction_to(glass_statue.location)
+                if unit.can_throw(direction):
+                    unit.queue_throw(direction)
+                    return 1
+
         enemies.sort(key=lambda x: unit.location.distance_to(x.location))
         for enemy in enemies: 
             if enemy.location != unit.location:
@@ -78,38 +89,48 @@ def attack_with_enemy(unit, tiles, enemies):
                     return 1
 
     ## Dirt spaces
-    dirt_tiles = get_dirt_tiles(unit.location, tiles) # List of dirt tile locations
-    if len(dirt_tiles) > 0:
-        for tile in dirt_tiles: 
-            if unit.location != tile: 
-                direction = unit.location.direction_to(tile)
-                # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
-                if unit.can_throw(direction):
-                    unit.queue_throw(direction)
-                    # print('DIRTTT')
-                    return 1
+    # dirt_tiles = get_dirt_tiles(unit.location, tiles) # List of dirt tile locations
+    # if len(dirt_tiles) > 0:
+    #     for tile in dirt_tiles: 
+    #         if unit.location != tile: 
+    #             direction = unit.location.direction_to(tile)
+    #             # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
+    #             if unit.can_throw(direction):
+    #                 unit.queue_throw(direction)
+    #                 # print('DIRTTT')
+    #                 return 1
 
     return 0
 
-def attack_with_ally(unit, enemies):
-    """
-    1. Scan for enemies
+# def attack_with_ally(unit, enemies):
+#     """
+#     1. Scan for enemies
 
-    Returns:
-        True if threw someone
-        False if still holding someone
-    """
-    if len(enemies) > 0:
-        enemies.sort(key=lambda x: x.location)
-        for enemy in enemies: 
-            if enemy.location != unit.location:
-                direction = unit.location.direction_to(enemy.location)
-                # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
-                if unit.can_throw(direction):
-                    unit.queue_throw(direction)
-                    # print('friend throw')
-                    return 1
-    return 0
+#     Returns:
+#         True if threw someone
+#         False if still holding someone
+#     """
+#     if len(enemies) > 0:
+#         glass_statues = filter(lambda x: x.is_statue == True, enemies)
+#         glass_statues = sorted(filter(lambda x: unit.location.distance_to(x.location) < 8, glass_statues))
+
+#         if len(glass_statues) > 0:
+#             for glass_statue in glass_statues: 
+#                 direction = unit.location.direction_to(glass_statue.location)
+#                 if unit.can_throw(direction):
+#                     unit.queue_throw(direction)
+#                     return 1
+
+#         enemies.sort(key=lambda x: x.location)
+#         for enemy in enemies: 
+#             if enemy.location != unit.location:
+#                 direction = unit.location.direction_to(enemy.location)
+#                 # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
+#                 if unit.can_throw(direction):
+#                     unit.queue_throw(direction)
+#                     # print('friend throw')
+#                     return 1
+#     return 0
 
 def defend(unit, defendLoc, my_team, enemies):
     """

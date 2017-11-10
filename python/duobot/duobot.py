@@ -16,7 +16,7 @@ increase_explorer = False
 explorer_id_list = []
 
 for state in game.turns():
-    # Your Code will run within this loop
+    Your Code will run within this loop
     self_turn += 1
     if self_turn % 20 == 0: #increase number of explorers
         increase_explorer = True
@@ -48,21 +48,21 @@ for state in game.turns():
                 role = "idle"
             else: continue
 
-        if role == "idle":# If thrower, tries to attack
-            if state.map.sector_at(my_location).team.name != state.my_team.name:
-                # print("hello?")
-                for direction in battlecode.Direction.directions():
-                    if entity.can_build(direction):
-                        entity.queue_build(direction)
-                        break
+        # if role == "idle":# If thrower, tries to attack
+        if state.map.sector_at(my_location).team.name != state.my_team.name:
+            # print("hello?")
+            for direction in battlecode.Direction.directions():
+                if entity.can_build(direction):
+                    entity.queue_build(direction)
+                    break
 
-            carrying = prep_stance(entity, 'attack', state)
-            if carrying >= 0: 
-                attacked = stance(entity, 'attack', state, enemies)
-                if attacked == 0:
-                    stance(entity, 'hedge', state)
+        carrying = prep_stance(entity, 'attack', state)
+        if carrying >= 0: 
+            attacked = stance(entity, 'attack', state, enemies)
+            if attacked == 0:
+                stance(entity, 'hedge', state)
 
-            movement.away_from_glass(entity, state)
+        movement.away_from_glass(entity, state)
 
         if role == "defend":
             pass        
