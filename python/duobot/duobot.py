@@ -35,10 +35,12 @@ for state in game.turns():
         if entity.id in explorer_id_list:
             movement.expansion(state,entity)
             continue
-        
+
+        # If thrower, tries to attack
         if entity.is_thrower: 
-            prep_stance(entity, 'attack', state)
-            stance(entity, 'attack', state, enemies)
+            carrying = prep_stance(entity, 'attack', state)
+            if carrying >= 0: 
+                stance(entity, 'attack', state, enemies)
 
             movement.away_from_glass(entity, state)
 

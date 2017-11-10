@@ -39,23 +39,28 @@ def prep_attack(unit, my_team):
     Return -1: 
         No one adjacent / did nothing
     """
-    friend = None
-    enemy = None
+    friends = []
+    enemies = []
 
     for entity in unit.entities_within_adjacent_distance(1):
         if entity.team == my_team:
-            friend = entity
+            friends.append(entity)
         else: 
-            enemy = entity
+            enemies.append(entity)
 
-    if enemy != None and unit.can_pickup(enemy): 
-        unit.queue_pickup(enemy)
-        print('enemy pickup')
-        return 1
-    elif friend != None and unit.can_pickup(friend):
-        unit.queue_pickup(friend)
-        print('friend pickup')
-        return 1
+    if len(enemies) > 0:
+        for enemy in enemies:
+            if unit.can_pickup(enemy): 
+                unit.queue_pickup(enemy)
+                print('enemy pickup')
+                return 1
+
+    elif len(friends) > 0:
+        for friend in friends: 
+            if unit.can_pickup(friend):
+                unit.queue_pickup(friend)
+                print('friend pickup')
+                return 1
     return -1
 
 def prep_defend(unit, my_team):
