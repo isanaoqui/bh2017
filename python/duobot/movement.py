@@ -13,15 +13,17 @@ def expansion(state, entity):
 		if sector_distance < min_distance:
 			min_distance = sector_distance
 			closest_sector = sector
-
+	if closest_sector == None:
+		return "idle"
 	sector_location = closest_sector.top_left
 
 	if sector_location == my_location and entity.can_build(battlecode.Direction.EAST):
 		entity.queue_build(battlecode.Direction.EAST)
 	else: 
 		move_to_location(state, entity, closest_sector.top_left)
+		return "moving"
 		#sprint("moving to location")
-
+	return "building"
 
 def move_to_location(state, entity, location):
 	my_location = entity.location
