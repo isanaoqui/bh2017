@@ -60,7 +60,7 @@ for state in game.turns():
                 if attacked == 0:
                     stance(entity, 'hedge', state)
 
-            movement.space_out(entity, state, 3)
+            movement.space_out(state, entity, 3)
 
         if role == "defend":
             pass        
