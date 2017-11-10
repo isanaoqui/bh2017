@@ -33,7 +33,6 @@ for state in game.turns():
         if increase_explorer and entity.id not in explorer_id_list:
             increase_explorer = False
             explorer_id_list.append(entity.id)
-            print("increased number of explorers to: ",len(explorer_id_list))
 
 
         #DESIGNATE ROLES
@@ -49,16 +48,17 @@ for state in game.turns():
             else: continue
 
         if role == "idle":# If thrower, tries to attack
-            if state.map.sector_at(my_location).team.name != state.my_team.name:
+            
+            if state.map.sector_at(my_location).team != state.my_team:
                 print("hello?")
                 for direction in battlecode.Direction.directions():
                     if entity.can_build(direction):
                         entity.queue_build(direction)
+            
             carrying = prep_stance(entity, 'attack', state)
             if carrying >= 0: 
                 stance(entity, 'attack', state, enemies)
-
-            movement.away_from_glass(entity, state)
+            movement.space_out(state,entity,3)
 
         if role == "defend":
             pass        
