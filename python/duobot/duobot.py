@@ -16,7 +16,7 @@ increase_explorer = False
 explorer_id_list = []
 
 for state in game.turns():
-    # Your Code will run within this loop
+    Your Code will run within this loop
     self_turn += 1
     if self_turn % 20 == 0: #increase number of explorers
         increase_explorer = True

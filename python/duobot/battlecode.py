@@ -121,7 +121,6 @@ class Direction(object):
         Args:
             dx (int): the delta in the x direction which has to be in range 1,0,-1
             dy (int): the delta in the y direction which has to be in range 1,0,-1
-
         Returns:
             Direction: A new direction with given dx and dy
         '''
@@ -138,7 +137,7 @@ class Direction(object):
         Returns:
             Direction: A new Direction rotated 90 degrees to the left
         '''
-        return direction.rotate_counter_clockwise_degrees(90)
+        return self.rotate_counter_clockwise_degrees(90)
 
     def rotate_right(self):
         '''
@@ -146,7 +145,7 @@ class Direction(object):
         Returns:
             Direction: A new Direction rotated 90 degrees to the right
         '''
-        return direction.rotate_counter_clockwise_degrees(270)
+        return self.rotate_counter_clockwise_degrees(270)
 
     def rotate_opposite(self):
         '''
@@ -154,14 +153,13 @@ class Direction(object):
         Returns:
             Direction: A new direction opposite to the original
         '''
-        return direction.rotate_counter_clockwise_degrees(180)
+        return self.rotate_counter_clockwise_degrees(180)
 
     def rotate_counter_clockwise_degrees(self, degrees):
         '''Rotate an angle by given number of degrees.
         Args:
              degree (int): degree to rotate counter clockwise by. Must be
                         degree%45==0
-
         Returns:
             Direction: a new rotated Direction
         '''
@@ -194,7 +192,6 @@ Direction.WEST = Direction(-1,  0)
 class Entity(object):
     '''
     An entity in the world: a Thrower, Hedge, or Statue.
-
     Do not modify the properties of this object; it won't do anything
     Instead, call the queue functions such as entity.queue_move() and other
     methods to tell the game to do something next turn.
@@ -203,6 +200,7 @@ class Entity(object):
         type (string): String type of a given entity
         team (Team): team of entity
         hp (int): hp of entity
+        location (Location): The location of the entity it is never NONE
         cooldown_end (int): turn when cooldown is 0
         held_by (Entity): Entity holding this object. If not held held_by is
                           None
@@ -381,7 +379,6 @@ class Entity(object):
         Self has to be holding a unit and self has to be able to act.
         The adjacent square in the given direction has to be on the map and not
         occupied.
-
         Args:
             direction (Direction): Direction this entity desires to throw its
                                    held entity
@@ -663,14 +660,12 @@ class Entity(object):
         Args:
             distance (float): returns all entities with distance less than <=
                               distance
-
         Options Args:
             include_held (bool): Defaults to false. If true held units will be
                                   included in the iterator
             iterator (iterator or list): A subset of bots to iterate through.
                                          Will only search the bots in this
                                          iterator
-
         Returns:
             [Entities]: Returns a generator for the entities within distance of
                         of this robot
@@ -706,14 +701,12 @@ class Entity(object):
         Args:
             distance (float): returns all entities with distance less than <=
                               distance
-
         Options Args:
             include_held (bool): Defaults to false. If true held units will be
                                   included in the iterator
             iterator (iterator or list): A subset of bots to iterate through.
                                          Will only search the bots in this
                                          iterator
-
         Returns:
             [Entities]: Returns a generator for the entities within distance of
                         of this robot
@@ -1090,8 +1083,10 @@ class State(object):
             ent = self.entities[dead]
             if(ent.held_by == None):
                 if self.map._occupied[ent.location].id == ent.id:
-                    del self.map._occupied[ent.location]
-            del self.entities[dead]
+                    if ent.location in self.map._occupied:
+                        del self.map._occupied[ent.location]
+            if dead in self.entities:
+                del self.entities[dead]
 
     def _validate(self):
         for ent in self.entities.values():
@@ -1241,6 +1236,7 @@ class Game(object):
                 self._recv_queue.put(None)
                 return
 
+            message = message.decode()
             result = json.loads(message)
 
             if "command" not in result:
