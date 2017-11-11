@@ -24,6 +24,19 @@ for state in game.turns():
     '''
     enemies = list(state.get_entities(team=state.other_team))
 
+    frac_my_sectors = movement.get_fraction_sectors(state, state.my_team)
+    frac_enemy_sectors = movement.get_fraction_sectors(state, state.other_team)
+
+    print('my sectors: ', frac_my_sectors)
+    print('enemy sectors: ', frac_enemy_sectors)
+    mode = 'regular'
+    ## Defensive mode
+    if frac_my_sectors < 0.3 and (frac_enemy_sectors*100 - frac_my_sectors*100) > 20: 
+        mode = 'defense'
+    ## Run it down mid mode
+    elif frac_my_sectors > 0.7: 
+        mode = 'offense'
+
     for entity in state.get_entities(team=state.my_team): 
         # This line gets all the bots on your team
         my_location = entity.location
@@ -45,10 +58,19 @@ for state in game.turns():
             role = "attack"
         elif build_state: 
             role = "explore"
-        else: 
-            role = "idle"
+        elif mode == "defense":
+            role = "defend"
+        else: role = "idle" #default
 
         # CARRY OUT ROLES
+
+        if role == "defend":
+            carrying = prep_stance(entity, 'defend', state)
+            if carrying >= 0: 
+                defended = stance(entity, 'defend', state, enemies)  
+
+            role = "idle"
+
         if role == "explore":# If thrower, tries to attack
             for direction in battlecode.Direction.directions():
                 if entity.can_build(direction):
@@ -67,10 +89,7 @@ for state in game.turns():
         if role == "idle":
             movement.space_out(state, entity, 3)
 
-        if role == "defend":
-            pass        
-
-
+        
 
 end = time.clock()
 print('clock time: '+str(end - start))
