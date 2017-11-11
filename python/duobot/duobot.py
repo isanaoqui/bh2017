@@ -37,7 +37,7 @@ for state in game.turns():
 
         #DESIGNATE ROLES
 
-        nearby_entities = entity.entities_within_euclidean_distance(6)
+        nearby_entities = entity.entities_within_euclidean_distance(3)
         nearby_enemies = list(filter(lambda x: x.team == state.other_team, nearby_entities))
         build_state = True
 
@@ -54,7 +54,7 @@ for state in game.turns():
         elif frac_enemy_sectors > 0.7: 
             role = 'defense'
         ## Run it down mid mode
-        elif frac_my_sectors > 0.7: 
+        elif frac_my_sectors > 0.3: 
             role = 'offense'
         else: role = "idle" #default
 
