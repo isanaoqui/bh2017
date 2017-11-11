@@ -23,7 +23,7 @@ def stance(unit, setting, state, enemies=None, defendLoc=None):
         if setting == 'expand': 
             return expand(unit, my_team)
         elif setting == 'attack':
-            return attack(unit, tiles, my_team, enemies)
+            return attack(unit, state, tiles, my_team, enemies)
         elif setting == 'defend' and defendLoc != None:
             return defend(unit, defendLoc, my_team, enemies)
         elif setting == 'hedge': 
@@ -33,7 +33,7 @@ def stance(unit, setting, state, enemies=None, defendLoc=None):
 def expand(unit, my_team):
     raise NotImplementedError
 
-def attack(unit, tiles, my_team, enemies):
+def attack(unit, state, tiles, my_team, enemies):
     """
     Priority:
         pick up enemy and throw them onto enemy (for 10 turns)
@@ -52,19 +52,19 @@ def attack(unit, tiles, my_team, enemies):
         False if still holding someone
     """
     if unit.holding.team != my_team: 
-        return attack_with_enemy(unit, tiles, enemies)
+        return attack_with_enemy(unit, state, tiles, enemies)
     else:
-        return attack_with_ally(unit, enemies)
+        return attack_with_ally(unit, state, enemies)
     # return attack_with_enemy(unit, tiles, enemies)
 
-def attack_with_enemy(unit, tiles, enemies):
+def attack_with_enemy(unit, state, tiles, enemies):
     """
     1. Scan for enemies 
     2. Scan for dirt spaces
 
     Returns:
-        True if threw someone
-        False if still holding someone
+        1 if threw someone
+        0 if still holding someone
     """
     ## Enemies
     if len(enemies) > 0:
@@ -74,7 +74,7 @@ def attack_with_enemy(unit, tiles, enemies):
         if len(glass_statues) > 0:
             for glass_statue in glass_statues: 
                 direction = unit.location.direction_to(glass_statue.location)
-                if unit.can_throw(direction):
+                if coast_clear(unit, state, glass_statue.location, direction) and unit.can_throw(direction):
                     unit.queue_throw(direction)
                     return 1
 
@@ -82,27 +82,27 @@ def attack_with_enemy(unit, tiles, enemies):
         for enemy in enemies: 
             if enemy.location != unit.location:
                 direction = unit.location.direction_to(enemy.location)
-                # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
-                if unit.can_throw(direction):
+                if coast_clear(unit, state, enemy.location, direction) and unit.can_throw(direction): 
+                # if unit.can_throw(direction):
                     unit.queue_throw(direction)
                     # print('enemy throw')
                     return 1
 
-    ## Dirt spaces
-    # dirt_tiles = get_dirt_tiles(unit.location, tiles) # List of dirt tile locations
-    # if len(dirt_tiles) > 0:
-    #     for tile in dirt_tiles: 
-    #         if unit.location != tile: 
-    #             direction = unit.location.direction_to(tile)
-    #             # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
-    #             if unit.can_throw(direction):
-    #                 unit.queue_throw(direction)
-    #                 # print('DIRTTT')
-    #                 return 1
+    # Dirt spaces
+    dirt_tiles = get_dirt_tiles(unit.location, tiles) # List of dirt tile locations
+    if len(dirt_tiles) > 0:
+        for tile in dirt_tiles: 
+            if unit.location != tile: 
+                direction = unit.location.direction_to(tile)
+                # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
+                if unit.can_throw(direction):
+                    unit.queue_throw(direction)
+                    # print('DIRTTT')
+                    return 1
 
     return 0
 
-def attack_with_ally(unit, enemies):
+def attack_with_ally(unit, state, enemies):
     """
     1. Scan for enemies
 
@@ -117,7 +117,7 @@ def attack_with_ally(unit, enemies):
         if len(glass_statues) > 0:
             for glass_statue in glass_statues: 
                 direction = unit.location.direction_to(glass_statue.location)
-                if unit.can_throw(direction):
+                if coast_clear(unit, state, glass_statue.location, direction) and unit.can_throw(direction):
                     unit.queue_throw(direction)
                     return 1
 
@@ -125,7 +125,7 @@ def attack_with_ally(unit, enemies):
         for enemy in enemies: 
             if enemy.location != unit.location:
                 direction = unit.location.direction_to(enemy.location)
-                # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
+                # if coast_clear(unit, state, enemy.location, direction) and unit.can_throw(direction): 
                 if unit.can_throw(direction):
                     unit.queue_throw(direction)
                     # print('friend throw')
@@ -180,12 +180,26 @@ def hedge(unit, state):
                 return 1
     return 0
 
-def coast_clear(unit, targetLoc, direction):
+def coast_clear(unit, state, targetLoc, direction):
     """
     This function checks if the unit I want to hit is the first one
     in the given direction. 
     """
-    raise NotImplementedError
+    i = 0
+    while i < 7: 
+        new_loc = unit.location.adjacent_location_in_direction(direction)
+
+        if new_loc == targetLoc: 
+            return True
+
+        # There is ally in the way
+        entity = list(state.get_entities(location=new_loc, team=state.my_team))
+        if len(entity) > 0: 
+            return False
+
+        i += 1
+
+    return True
 
 def get_dirt_tiles(startLoc, tiles):
     """
