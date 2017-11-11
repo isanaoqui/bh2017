@@ -146,7 +146,6 @@ def defend(unit, state, defendLoc, my_team, enemies):
             if unit.location != tile: 
                 direction = unit.location.direction_to(tile)
                 if coast_clear(unit, state, tile, direction) and unit.can_throw(direction): 
-                # if unit.can_throw(direction):
                     unit.queue_throw(direction)
                     return 1
 
@@ -157,7 +156,6 @@ def defend(unit, state, defendLoc, my_team, enemies):
             if enemy != unit.holding:
                 direction = unit.location.direction_to(enemy.location)
                 if coast_clear(unit, state, enemy.location, direction) and unit.can_throw(direction): 
-                # if unit.can_throw(direction):
                     unit.queue_throw(direction)
                     return 1
     return 0

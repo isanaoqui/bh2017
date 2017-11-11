@@ -62,13 +62,13 @@ for state in game.turns():
         elif mode == "defense":
             role = "defend"
         elif mode == "offense":
-            role = "offensive"
+            role = "offense"
         else: role = "idle" #default
 
         # CARRY OUT ROLES
 
-        if role == "offend": 
-            
+        if role == "offense": 
+            role = "idle"
 
         if role == "defend":
             carrying = prep_stance(entity, 'defend', state)
