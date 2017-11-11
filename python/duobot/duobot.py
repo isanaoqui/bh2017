@@ -27,16 +27,7 @@ for state in game.turns():
     frac_my_sectors = movement.get_fraction_sectors(state, state.my_team)
     frac_enemy_sectors = movement.get_fraction_sectors(state, state.other_team)
 
-    print('my sectors: ', frac_my_sectors)
-    print('enemy sectors: ', frac_enemy_sectors)
     mode = 'regular'
-    
-    ## Defensive mode
-    if frac_enemy_sectors > 0.7: 
-        mode = 'defense'
-    ## Run it down mid mode
-    elif frac_my_sectors > 0.7: 
-        mode = 'offense'
 
     for entity in state.get_entities(team=state.my_team): 
         # This line gets all the bots on your team
@@ -59,16 +50,30 @@ for state in game.turns():
             role = "attack"
         elif build_state: 
             role = "explore"
-        elif mode == "defense":
-            role = "defend"
-        elif mode == "offense":
-            role = "offensive"
+            ## Defensive mode
+        elif frac_enemy_sectors > 0.7: 
+            role = 'defense'
+        ## Run it down mid mode
+        elif frac_my_sectors > 0.7: 
+            role = 'offense'
         else: role = "idle" #default
 
         # CARRY OUT ROLES
 
-        if role == "offend": 
-            
+        if role == "offense": 
+            cum_x = 0
+            cum_y = 0
+            for enemy in enemies:
+                enemy_location = enemy.location
+                cum_x += enemy_location.x
+                cum_y += enemy_location.y
+            enemy_length = len(enemies)
+            average_location = battlecode.Location(int(cum_x/enemy_length),int(cum_y/enemy_length))
+            if average_location != my_location:
+                average_direction = my_location.direction_to(average_location)
+                if entity.can_move(average_direction):
+                    entity.queue_move(average_direction)
+            role = "idle"
 
         if role == "defend":
             carrying = prep_stance(entity, 'defend', state)
