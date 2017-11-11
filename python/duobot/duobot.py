@@ -48,7 +48,6 @@ for state in game.turns():
         else: 
             role = "idle"
 
-        print(role)
         # CARRY OUT ROLES
         if role == "explore":# If thrower, tries to attack
             for direction in battlecode.Direction.directions():
