@@ -88,9 +88,6 @@ def space_out(state, entity, radius):
 	if cumulative_x == 0 and cumulative_y == 0: return
 	final_direction = battlecode.Direction.from_delta(cumulative_x,cumulative_y)
 
-	if entity.id == 3 and state.turn == 160:
-		print(cumulative_x, " ", cumulative_y)
-
 	if entity.can_move(final_direction):
 		entity.queue_move(final_direction)
 	else:

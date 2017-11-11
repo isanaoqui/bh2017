@@ -68,8 +68,8 @@ def attack_with_enemy(unit, tiles, enemies):
     """
     ## Enemies
     if len(enemies) > 0:
-        glass_statues = filter(lambda x: x.is_statue == True, enemies)
-        glass_statues = sorted(filter(lambda x: unit.location.distance_to(x.location) < 8, glass_statues))
+        glass_statues = filter(lambda x: x.is_statue, enemies)
+        glass_statues = sorted(filter(lambda x: unit.location.distance_to(x.location) < 8, glass_statues),key=lambda x: unit.location.distance_to(x.location))
 
         if len(glass_statues) > 0:
             for glass_statue in glass_statues: 
@@ -112,7 +112,7 @@ def attack_with_ally(unit, enemies):
     """
     if len(enemies) > 0:
         glass_statues = filter(lambda x: x.is_statue == True, enemies)
-        glass_statues = sorted(filter(lambda x: unit.location.distance_to(x.location) < 8, glass_statues))
+        glass_statues = sorted(filter(lambda x: unit.location.distance_to(x.location) < 8, glass_statues),key=lambda x: unit.location.distance_to(x.location))
 
         if len(glass_statues) > 0:
             for glass_statue in glass_statues: 
