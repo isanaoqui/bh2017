@@ -25,7 +25,7 @@ def stance(unit, setting, state, enemies=None, defendLoc=None):
         elif setting == 'attack':
             return attack(unit, state, tiles, my_team, enemies)
         elif setting == 'defend' and defendLoc != None:
-            return defend(unit, defendLoc, my_team, enemies)
+            return defend(unit, state, defendLoc, my_team, enemies)
         elif setting == 'hedge': 
             return hedge(unit, state)
     return -1
@@ -73,10 +73,11 @@ def attack_with_enemy(unit, state, tiles, enemies):
 
         if len(glass_statues) > 0:
             for glass_statue in glass_statues: 
-                direction = unit.location.direction_to(glass_statue.location)
-                if coast_clear(unit, state, glass_statue.location, direction) and unit.can_throw(direction):
-                    unit.queue_throw(direction)
-                    return 1
+                if glass_statue.location != unit.location:
+                    direction = unit.location.direction_to(glass_statue.location)
+                    if coast_clear(unit, state, glass_statue.location, direction) and unit.can_throw(direction):
+                        unit.queue_throw(direction)
+                        return 1
 
         enemies.sort(key=lambda x: unit.location.distance_to(x.location))
         for enemy in enemies: 
@@ -132,7 +133,7 @@ def attack_with_ally(unit, state, enemies):
                     return 1
     return 0
 
-def defend(unit, defendLoc, my_team, enemies):
+def defend(unit, state, defendLoc, my_team, enemies):
     """
     1. Scan for far away dirt patches
     2. Scan for nearer dirt patches
@@ -144,10 +145,9 @@ def defend(unit, defendLoc, my_team, enemies):
         for tile in dirt_tiles: 
             if unit.location != tile: 
                 direction = unit.location.direction_to(tile)
-                # if Throw.coast_clear(unit, tile, direction) and unit.can_throw(direction): 
-                if unit.can_throw(direction):
+                if coast_clear(unit, state, tile, direction) and unit.can_throw(direction): 
+                # if unit.can_throw(direction):
                     unit.queue_throw(direction)
-                    # print('DIRTTT')
                     return 1
 
     ## Enemies
@@ -156,10 +156,9 @@ def defend(unit, defendLoc, my_team, enemies):
         for enemy in enemies: 
             if enemy != unit.holding:
                 direction = unit.location.direction_to(enemy.location)
-                # if Throw.coast_clear(unit, enemy.location, direction) and unit.can_throw(direction): 
-                if unit.can_throw(direction):
+                if coast_clear(unit, state, enemy.location, direction) and unit.can_throw(direction): 
+                # if unit.can_throw(direction):
                     unit.queue_throw(direction)
-                    # print('enemy throw')
                     return 1
     return 0
 
