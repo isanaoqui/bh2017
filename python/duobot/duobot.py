@@ -17,10 +17,11 @@ explorer_id_list = []
 
 for state in game.turns():
     #Your Code will run within this loop
+    '''
     self_turn += 1
     if self_turn % 20 == 0: #increase number of explorers
         increase_explorer = True
-
+    '''
     enemies = list(state.get_entities(team=state.other_team))
 
     for entity in state.get_entities(team=state.my_team): 
@@ -29,41 +30,42 @@ for state in game.turns():
         if entity.type != "thrower":
             continue
 
-        # code if this entity is an explorer
-        if increase_explorer and entity.id not in explorer_id_list:
-            increase_explorer = False
-            explorer_id_list.append(entity.id)
-
         #DESIGNATE ROLES
-        if entity.id in explorer_id_list:
+
+        nearby_entities = entity.entities_within_euclidean_distance(6)
+        nearby_enemies = list(filter(lambda x: x.team == state.other_team, nearby_entities))
+        build_state = True
+
+        for ent in entity.entities_within_euclidean_distance(4):
+            if state.map.sector_at(my_location).team == state.my_team or ent.type == "statue":
+                build_state = False
+                break
+
+        if len(nearby_enemies) > 0:
+            role = "attack"
+        elif build_state: 
             role = "explore"
-        else: role = "idle" #default
+        else: 
+            role = "idle"
 
+        print(role)
         # CARRY OUT ROLES
-        if role == "explore":
-            current_action = movement.expansion(state,entity)
-            if current_action == "idle":
-                role = "idle"
-            else: continue
+        if role == "explore":# If thrower, tries to attack
+            for direction in battlecode.Direction.directions():
+                if entity.can_build(direction):
+                    entity.queue_build(direction)
+                    break
+            role = "idle"
 
-        if role == "idle":# If thrower, tries to attack
-            build_state = True
-            if state.map.sector_at(my_location).team.name != state.my_team.name:
-                for ent in entity.entities_within_euclidean_distance(4):
-                    if ent.type == "statue":
-                        build_state = False
-                if build_state: #build
-                    for direction in battlecode.Direction.directions():
-                        if entity.can_build(direction):
-                            entity.queue_build(direction)
-                            break
-
+        if role == "attack":
             carrying = prep_stance(entity, 'attack', state)
             if carrying >= 0: 
                 attacked = stance(entity, 'attack', state, enemies)
                 if attacked == 0:
                     stance(entity, 'hedge', state)
+            role = "idle"
 
+        if role == "idle":
             movement.space_out(state, entity, 3)
 
         if role == "defend":
