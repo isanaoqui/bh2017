@@ -30,8 +30,9 @@ for state in game.turns():
     print('my sectors: ', frac_my_sectors)
     print('enemy sectors: ', frac_enemy_sectors)
     mode = 'regular'
+    
     ## Defensive mode
-    if frac_my_sectors < 0.3 and (frac_enemy_sectors*100 - frac_my_sectors*100) > 20: 
+    if frac_enemy_sectors > 0.7: 
         mode = 'defense'
     ## Run it down mid mode
     elif frac_my_sectors > 0.7: 
@@ -62,7 +63,6 @@ for state in game.turns():
             role = "defend"
         else: role = "idle" #default
 
-        print(role)
         # CARRY OUT ROLES
 
         if role == "defend":
